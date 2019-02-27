@@ -22,7 +22,7 @@ function qs<T extends Element>(
   );
 }
 
-function randInt(min, max) {
+function randInt(min: number, max: number) {
   return ~~(Math.random() * (max - min)) + min;
 }
 
