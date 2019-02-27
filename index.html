@@ -8,6 +8,10 @@
     box-sizing: border-box;
   }
 
+  .animating {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
   .measuring-stick {
     position: absolute;
     bottom: 32px;
@@ -16,7 +20,12 @@
   }
 
   .container {
+    position: absolute;
+    bottom: 32px;
+    right: 32px;
+
     width: 300px;
+    height: 320px;
     padding: 12px;
 
     border: thin solid #eee;
@@ -24,7 +33,7 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 
     overflow: scroll;
-    transform-origin: 0% 0%;
+    transform-origin: 0% 100%;
   }
 
   .child {

@@ -9,9 +9,7 @@ function qs<T extends Element>(
 ): T {
   const element = document.querySelector(selector);
   if (element == null) {
-    throw new Error(
-      `could not find element matching selector ${selector}`
-    );
+    throw new Error(`could not find element matching selector ${selector}`);
   }
 
   if (element instanceof expectedConstructor) {
@@ -36,8 +34,7 @@ let { height: prevHeight } = container$.getBoundingClientRect();
 function render() {
   const nextHeight = randInt(320, 800);
 
-  container$.style.setProperty("transition", "none");
-  child$.style.setProperty("transition", "none");
+  cleanUpAnimations();
 
   container$.style.setProperty("height", `${nextHeight}px`);
 
@@ -46,26 +43,26 @@ function render() {
   container$.style.setProperty("transform", `scaleY(${ratio})`);
   child$.style.setProperty("transform", `scaleY(${1 / ratio})`);
 
-  setTimeout(() => {
-    container$.style.setProperty(
-      "transition",
-      "transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)"
-    );
-    child$.style.setProperty(
-      "transition",
-      "transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)"
-    );
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      container$.classList.add("animating");
+      child$.classList.add("animating");
 
-    container$.style.setProperty("transform", "scaleY(1)");
-    child$.style.setProperty("transform", "scaleY(1)");
+      container$.style.setProperty("transform", "");
+      child$.style.setProperty("transform", "");
 
-    container$.addEventListener("transitionend", () => {
-      container$.style.setProperty("transition", "none");
-      child$.style.setProperty("transition", "none");
+      container$.addEventListener("transitionend", () => {
+        cleanUpAnimations();
+      });
     });
-  }, 0);
+  });
 
   prevHeight = nextHeight;
+}
+
+function cleanUpAnimations() {
+  container$.classList.remove("animating");
+  child$.classList.remove("animating");
 }
 
 document.querySelector("#step").addEventListener("click", render);
