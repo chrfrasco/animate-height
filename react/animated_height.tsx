@@ -1,24 +1,31 @@
 import * as React from "react";
 import classNames from "classnames";
 
+const enum AnimationState {
+  IDLE,
+  APPLY_TRANSFORM,
+  PLAY_ANIMATION
+}
+
 type AnimatedHeightStatelessProps = {
   height: number;
-  animating: boolean;
+  animationState: AnimationState;
   ratio?: number;
-  transform: boolean;
   onTransitionEnd(): void;
 };
 
 const AnimatedHeightStateless: React.ComponentType<
   AnimatedHeightStatelessProps
-> = ({ animating, transform, height, ratio, children, onTransitionEnd }) => {
+> = ({ animationState, height, ratio, children, onTransitionEnd }) => {
+  const animating = animationState === AnimationState.PLAY_ANIMATION;
   const containerClassName = classNames("container", { animating });
   const childClassName = classNames("child", { animating });
 
+  const applyTransform = animationState === AnimationState.APPLY_TRANSFORM;
   const containerTransform =
-    ratio != null && transform ? `scaleY(${ratio})` : "";
+    ratio != null && applyTransform ? `scaleY(${ratio})` : "";
   const childTransform =
-    ratio != null && transform ? `scaleY(${1 / ratio})` : "";
+    ratio != null && applyTransform ? `scaleY(${1 / ratio})` : "";
 
   return (
     <div
@@ -36,8 +43,7 @@ const AnimatedHeightStateless: React.ComponentType<
 type AnimatedHeightProps = { height: number };
 
 type AnimatedHeightState = {
-  animating: boolean;
-  transform: boolean;
+  animationState: AnimationState;
   ratio?: number;
 };
 
@@ -45,10 +51,10 @@ export class AnimatedHeight extends React.Component<
   AnimatedHeightProps,
   AnimatedHeightState
 > {
-  state = { animating: false, transform: false, ratio: null };
+  state = { animationState: AnimationState.IDLE, ratio: null };
 
   onTransitionEnd = () => {
-    this.setState({ animating: false });
+    this.setState({ animationState: AnimationState.IDLE });
   };
 
   componentDidUpdate(previousProps: AnimatedHeightProps) {
@@ -56,11 +62,11 @@ export class AnimatedHeight extends React.Component<
     const currentHeight = this.props.height;
     if (lastHeight !== currentHeight) {
       const ratio = lastHeight / currentHeight;
-      this.setState({ ratio, transform: true });
-    } else if (this.state.transform) {
+      this.setState({ ratio, animationState: AnimationState.APPLY_TRANSFORM });
+    } else if (this.state.animationState === AnimationState.APPLY_TRANSFORM) {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          this.setState({ animating: true, transform: false });
+          this.setState({ animationState: AnimationState.PLAY_ANIMATION });
         });
       });
     }
@@ -68,13 +74,12 @@ export class AnimatedHeight extends React.Component<
 
   render() {
     const { children, height } = this.props;
-    const { animating, transform, ratio } = this.state;
+    const { animationState, ratio } = this.state;
     return (
       <AnimatedHeightStateless
         height={height}
         ratio={ratio}
-        animating={animating}
-        transform={transform}
+        animationState={animationState}
         onTransitionEnd={this.onTransitionEnd}
       >
         {children}
