@@ -15,6 +15,7 @@
     "classnames": "^2.2.6",
     "lorem-ipsum": "^1.0.6",
     "react": "^16.8.3",
-    "react-dom": "^16.8.3"
+    "react-dom": "^16.8.3",
+    "react-measure": "^2.2.4"
   }
 }
