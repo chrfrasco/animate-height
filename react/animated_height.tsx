@@ -23,9 +23,9 @@ const AnimatedHeightStateless: React.ComponentType<
 
   const applyTransform = animationState === AnimationState.APPLY_TRANSFORM;
   const containerTransform =
-    ratio != null && applyTransform ? `scaleY(${ratio})` : "";
+    ratio != null && applyTransform ? `translateZ(0) scaleY(${ratio})` : "translateZ(0)";
   const childTransform =
-    ratio != null && applyTransform ? `scaleY(${1 / ratio})` : "";
+    ratio != null && applyTransform ? `translateZ(0) scaleY(${1 / ratio})` : "translateZ(0)";
 
   return (
     <div
